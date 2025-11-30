@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to My World - Glass Edition</title>
+<style>
+/* ====================================
+   إعدادات عامة وترتيب الصفحة
+   ==================================== */
+* { margin:0; padding:0; box-sizing:border-box; font-family:"Poppins", sans-serif; }
+
+body {
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background: radial-gradient(circle at bottom, #00f5ff 0%, #00111a 70%, #000 100%);
+  color:#fff;
+  position: relative;
+}
+
+/* ====================================
+   النجوم Parallax
+   ==================================== */
+.stars, .stars2, .stars3 {
+  position:absolute; width:2px; height:2px; background:white;
+  animation: moveStars linear infinite;
+  z-index:0;
+}
+.stars { opacity:0.8; animation-duration:50s; box-shadow:100px 200px white,300px 400px white,500px 250px white,700px 100px white,900px 350px white,1100px 200px white; }
+.stars2 { opacity:0.5; animation-duration:80s; box-shadow:150px 300px #00f5ff,400px 150px #00f5ff,650px 350px #00f5ff,900px 250px #00f5ff; }
+.stars3 { opacity:0.3; animation-duration:120s; box-shadow:200px 350px #00e5ff,500px 450px #00e5ff,800px 150px #00e5ff; }
+
+@keyframes moveStars { from { transform: translateY(0) scale(1); } to { transform: translateY(-1500px) scale(0.8); } }
+
+/* ====================================
+   ✅ تصميم الصندوق الزجاجي (Glassmorphism Box) ✅
+   ==================================== */
+.intro-container {
+  text-align:center;
+  z-index:2;
+  /* زيادة الحشوة الداخلية ليتنفس المحتوى داخل الصندوق */
+  padding: 50px 40px;
+  
+  /* خصائص الزجاج */
+  background: rgba(0, 245, 255, 0.05); /* خلفية شفافة جداً مائلة للزرقة */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* ظل لإعطاء عمق */
+  backdrop-filter: blur( 20px ); /* أهم خاصية: ضبابية الخلفية */
+  -webkit-backdrop-filter: blur( 20px ); /* لدعم متصفح سفاري */
+  border-radius: 30px; /* زوايا دائرية */
+  border: 1px solid rgba(0, 245, 255, 0.2); /* حدود رقيقة شبه شفافة */
+  
+  /* تحديد عرض الصندوق حتى لا يملأ الشاشة */
+  max-width: 700px;
+  width: 90%;
+}
+
+/* ====================================
+   المحتوى الرئيسي - الأنماط الأساسية
+   ==================================== */
+h1, p, button { opacity:0; transform: translateY(60px); margin-bottom:20px; }
+h1 { font-size:3em; font-weight:700; }
+
+/* تأثير التحويم على h1 */
+h1:hover {
+  transform: scale(1.1);
+}
+
+p { font-size:1.3em; color:#d9ffff; }
+button {
+  margin-top:30px;
+  padding:15px 60px;
+  font-size:18px;
+  border:none;
+  border-radius:50px;
+  background: linear-gradient(90deg, #00f5ff, #002e62);
+  box-shadow:0 0 25px #00f5ff80,0 0 35px #00f5ff50 inset;
+  color:#fff;
+  cursor:pointer;
+  transition: all 0.4s ease;
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+ 
+
+/* ====================================
+   حركة الظهور In (كل عنصر تدريجيًا)
+   ==================================== */
+body.intro-loaded h1 { animation: fadeInUp 1.5s ease forwards; }
+body.intro-loaded p { animation: fadeInUp 1.5s ease forwards 0.7s; }
+body.intro-loaded button { animation: fadeInUp 1.5s ease forwards 1.4s; }
+
+@keyframes fadeInUp { from { opacity:0; transform:translateY(60px); } to { opacity:1; transform:translateY(0); } }
+
+/* ====================================
+   حركة الاختفاء Out لجميع العناصر دفعة واحدة
+   ==================================== */
+body.fade-out .intro-container,
+body.fade-out .stars,
+body.fade-out .stars2,
+body.fade-out .stars3 {
+  animation: fadeOutAll 2s ease forwards;
+}
+
+@keyframes fadeOutAll {
+  from { opacity:1; transform:translateY(0); }
+  to { opacity:0; transform:translateY(60px); }
+}
+
+/* ====================================
+   طبقة الانتقال الأسود
+   ==================================== */
+.fade-overlay {
+  position: fixed; top:0; left:0; width:100%; height:100%;
+  background:black; opacity:0; pointer-events:none;
+  transition: opacity 2s ease-in-out;
+  z-index:5;
+}
+
+body.fade-out .fade-overlay { opacity:1; pointer-events:auto; transition-delay:2s; }
+
+</style>
+</head>
+<body>
+
+<div class="stars"></div>
+<div class="stars2"></div>
+<div class="stars3"></div>
+
+ 
+<div class="intro-container">
+    <h1>Welcome in ..BiL-Store..</h1>
+    <p>   الأمان، الجودة، والموثوقية... كل ما تحتاجه لمتعة التسوق الحقيقية   </p>
+    <button id="continueBtn">Go to chope ! 🛍️</button>
+</div>
+
+<div class="fade-overlay"></div> <script>
+const btn = document.getElementById("continueBtn");
+
+// ظهور الصفحة تدريجيًا
+window.addEventListener("DOMContentLoaded", () => {
+    document.body.classList.add("intro-loaded");
+});
+
+// اختفاء جميع العناصر دفعة واحدة مع التغطية السوداء
+btn.addEventListener("click", () => {
+    document.body.classList.add("fade-out");
+    setTimeout(() => {
+        window.location.href = "../Index-Html/index.html"; // تم تعليق الرابط للتجربة
+        console.log("Navigating..."); 
+    }, 4500); // مدة كافية لاكتمال كل الحركات slow
+});
+</script>
+
+</body>
+</html>

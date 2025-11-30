@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../../CSS/Admin-Css/products-admin.css">
+<title>لوحة الإدارة - المتجر</title>
+ 
+</head>
+<body>
+<h1>لوحة الإدارة</h1>
+
+<div class="nav">
+  <button data-tab="products" class="active">🛒 المنتجات</button>
+  <button data-tab="categories">🏷️ التصنيفات</button>
+</div>
+
+<div id="message" class="msg"></div>
+
+<!-- قسم المنتجات -->
+<section id="products" class="active">
+  <div class="top" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+    <input id="search" type="search" placeholder="ابحث...">
+    <select id="filterCategory"><option value="">كل التصنيفات</option></select>
+    <button id="openAdd" class="primary">+ إضافة منتج</button>
+  </div>
+  <div id="productsGrid" class="grid"></div>
+</section>
+
+<!-- قسم التصنيفات -->
+<section id="categories">
+  <h2>إدارة التصنيفات</h2>
+  <form id="catForm" style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap;">
+    <input id="catName" placeholder="اسم التصنيف">
+    <button class="primary">إضافة</button>
+  </form>
+  <div id="categoriesList" class="cat-list"></div>
+</section>
+
+<!-- ================= مودال إضافة منتج ================= -->
+<div id="addModal" class="modal">
+  <div class="box">
+    <h3>إضافة منتج</h3>
+    <form id="addForm">
+      <div class="file-input-wrapper">
+        <label>صور المنتج (اختر الصور ثم اضغط على إحداها لجعلها الرئيسية):</label>
+        <input id="addImagesInput" type="file" multiple accept="image/*">
+      </div>
+      <!-- حاوية معاينة الصور -->
+      <div id="addPreviewContainer" class="upload-preview-container">
+        <span style="font-size:12px; color:#888; width:100%; text-align:center;">لا توجد صور مختارة</span>
+      </div>
+
+      <input name="name" placeholder="اسم المنتج *" required>
+      <textarea name="description" rows="3" placeholder="الوصف"></textarea>
+      
+      <!-- اختيار الألوان -->
+      <label style="font-size:13px; font-weight:bold;">الألوان المتاحة <span class="optional-txt">(اختياري)</span>:</label>
+      <div class="color-picker-container">
+        <input type="color" id="addColorPicker" value="#ff0000" style="width:50px; height:35px; cursor:pointer;">
+        <button type="button" id="btnAddColor" style="padding: 5px 10px; font-size:12px;">+ إضافة لون</button>
+      </div>
+      <div id="addColorsContainer" class="selected-colors-box"></div>
+      <input type="hidden" name="colors" id="addColorsInput">
+      
+      <!-- المقاسات -->
+      <label style="font-size:13px; font-weight:bold;">معلومات المقاسات <span class="optional-txt">(اختياري)</span>:</label>
+      <input name="sizes" type="text" placeholder="مثال: S, M, L">
+
+      <input name="price" type="number" placeholder="السعر *" required>
+      <select name="category_id" id="addCategory"><option value="">اختر التصنيف</option></select>
+      <div style="text-align:end;">
+        <button type="button" data-close>إلغاء</button>
+        <button class="primary" type="submit">حفظ</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ================= مودال تعديل منتج ================= -->
+<div id="editModal" class="modal">
+  <div class="box">
+    <h3>تعديل المنتج</h3>
+    <div class="small" id="editIdLabel"></div>
+    
+    <!-- عرض الصور القديمة -->
+    <div style="font-size:12px; margin-bottom:5px;">الصور الحالية:</div>
+    <div id="currentImages" class="preview-images" style="margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;"></div>
+
+    <form id="editForm">
+      <div class="file-input-wrapper">
+        <label>تحديث الصور (سيتم استبدال القديمة بالكامل):</label>
+        <input id="editImagesInput" type="file" multiple accept="image/*">
+      </div>
+       <!-- حاوية معاينة الصور الجديدة -->
+      <div id="editPreviewContainer" class="upload-preview-container">
+        <span style="font-size:12px; color:#888; width:100%; text-align:center;">لم يتم اختيار صور جديدة</span>
+      </div>
+      
+      <input name="name" placeholder="اسم المنتج *" required>
+      <textarea name="description" rows="3" placeholder="الوصف"></textarea>
+      
+      <label style="font-size:13px; font-weight:bold;">الألوان <span class="optional-txt">(اختياري)</span>:</label>
+      <div class="color-picker-container">
+        <input type="color" id="editColorPicker" value="#000000" style="width:50px; height:35px; cursor:pointer;">
+        <button type="button" id="btnEditColor" style="padding: 5px 10px; font-size:12px;">+ إضافة لون</button>
+      </div>
+      <div id="editColorsContainer" class="selected-colors-box"></div>
+      <input type="hidden" name="colors" id="editColorsInput">
+      
+      <label style="font-size:13px; font-weight:bold;">معلومات المقاسات <span class="optional-txt">(اختياري)</span>:</label>
+      <input name="sizes" type="text" placeholder="حرر نص المقاسات">
+
+      <input name="price" type="number" placeholder="السعر *" required>
+      <select name="category_id" id="editCategory"><option value="">اختر التصنيف</option></select>
+      <div style="text-align:end;">
+        <button type="button" data-close>إلغاء</button>
+        <button class="primary" type="submit">تحديث</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+let PRODUCTS=[],FILTERED=[],editingId=null;
+const msgBox=$('#message');
+
+// متغيرات لتخزين ملفات الصور مرتبة
+let addFilesBuffer = [];
+let editFilesBuffer = [];
+
+function showMsg(txt,ok=true,time=2500){
+  msgBox.textContent=txt;
+  msgBox.className='msg '+(ok?'ok':'err');
+  msgBox.style.display='block';
+  if(time)setTimeout(()=>msgBox.style.display='none',time);
+}
+
+// ------------------- إدارة معاينة وترتيب الصور -------------------
+
+// دالة لمعالجة اختيار الملفات وتحديث البفر
+function handleFileSelect(event, bufferRef, containerId) {
+  const files = Array.from(event.target.files);
+  // نضيف الملفات الجديدة إلى القائمة الموجودة
+  files.forEach(f => bufferRef.push(f));
+  renderPreviews(bufferRef, containerId);
+  // تصفير الإدخال للسماح بإضافة المزيد نفس الملفات إذا لزم
+  event.target.value = '';
+}
+
+// دالة رسم المعاينة
+function renderPreviews(buffer, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+
+  if (buffer.length === 0) {
+    container.innerHTML = '<span style="font-size:12px; color:#888; width:100%; text-align:center;">لا توجد صور مختارة</span>';
+    return;
+  }
+
+  buffer.forEach((file, index) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const div = document.createElement('div');
+      div.className = 'img-preview-box';
+      if (index === 0) div.classList.add('is-main'); // الأولى هي الرئيسية
+      div.title = "اضغط لتعيينها كصورة رئيسية";
+
+      // عند النقر: جعل هذه الصورة هي الأولى (الرئيسية)
+      div.onclick = (evt) => {
+        if(evt.target.classList.contains('remove-img-btn')) return; // تجاهل زر الحذف
+        // نقل العنصر إلى بداية المصفوفة
+        const selectedFile = buffer.splice(index, 1)[0];
+        buffer.unshift(selectedFile);
+        renderPreviews(buffer, containerId);
+      };
+
+      const img = document.createElement('img');
+      img.src = e.target.result;
+      
+      const delBtn = document.createElement('span');
+      delBtn.className = 'remove-img-btn';
+      delBtn.innerText = '×';
+      delBtn.onclick = (evt) => {
+        evt.stopPropagation(); // منع تفعيل الـ onclick للصندوق
+        buffer.splice(index, 1);
+        renderPreviews(buffer, containerId);
+      };
+
+      div.appendChild(img);
+      div.appendChild(delBtn);
+      container.appendChild(div);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ربط الأحداث لمدخلات الصور
+$('#addImagesInput').addEventListener('change', (e) => handleFileSelect(e, addFilesBuffer, 'addPreviewContainer'));
+$('#editImagesInput').addEventListener('change', (e) => handleFileSelect(e, editFilesBuffer, 'editPreviewContainer'));
+
+
+// ------------------- منطق الألوان -------------------
+function createColorChip(colorCode, containerId, hiddenInputId) {
+  const container = document.getElementById(containerId);
+  const hiddenInput = document.getElementById(hiddenInputId);
+  
+  const currentColors = hiddenInput.value ? hiddenInput.value.split(',') : [];
+  if(currentColors.includes(colorCode)) return; 
+
+  const chip = document.createElement('div');
+  chip.className = 'color-chip';
+  chip.style.backgroundColor = colorCode;
+  
+  chip.onclick = function() {
+    container.removeChild(chip);
+    updateHiddenInput(containerId, hiddenInputId);
+  };
+  
+  container.appendChild(chip);
+  updateHiddenInput(containerId, hiddenInputId);
+}
+
+function updateHiddenInput(containerId, hiddenInputId) {
+  const container = document.getElementById(containerId);
+  const chips = container.querySelectorAll('.color-chip');
+  const colors = [];
+  chips.forEach(chip => {
+    colors.push(rgbToHex(chip.style.backgroundColor) || chip.style.backgroundColor); 
+  });
+  document.getElementById(hiddenInputId).value = colors.join(',');
+}
+
+function rgbToHex(rgb) {
+  if(!rgb || rgb.startsWith('#')) return rgb;
+  const sep = rgb.indexOf(",") > -1 ? "," : " ";
+  const rgbArr = rgb.substr(4).split(")")[0].split(sep);
+  let r = (+rgbArr[0]).toString(16),
+      g = (+rgbArr[1]).toString(16),
+      b = (+rgbArr[2]).toString(16);
+  if (r.length == 1) r = "0" + r;
+  if (g.length == 1) g = "0" + g;
+  if (b.length == 1) b = "0" + b;
+  return "#" + r + g + b;
+}
+
+$('#btnAddColor').onclick = () => { createColorChip($('#addColorPicker').value, 'addColorsContainer', 'addColorsInput'); };
+$('#btnEditColor').onclick = () => { createColorChip($('#editColorPicker').value, 'editColorsContainer', 'editColorsInput'); };
+
+function clearColors(containerId, hiddenInputId) {
+  document.getElementById(containerId).innerHTML = '';
+  document.getElementById(hiddenInputId).value = '';
+}
+
+// ------------------- دوال API -------------------
+async function apiFetchProducts(){ const res=await fetch('/products'); if(!res.ok) throw new Error('فشل جلب المنتجات'); return res.json(); }
+async function apiDeleteProduct(id){ return fetch(`/products/${id}`,{method:'DELETE'}); }
+async function apiUpdateProduct(id,fd){ return fetch(`/products/${id}`,{method:'PUT',body:fd}); }
+async function apiCreateProduct(fd){ return fetch('/products',{method:'POST',body:fd}); }
+async function apiFetchCategories(){ const res=await fetch('/categories'); if(!res.ok) throw new Error('فشل جلب التصنيفات'); return res.json(); }
+async function apiCreateCategory(name){ const res=await fetch('/categories',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})}); if(!res.ok) throw new Error('فشل إضافة التصنيف'); return res.json(); }
+async function apiUpdateCategory(id,name){ const res=await fetch(`/categories/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})}); if(!res.ok) throw new Error('فشل تحديث التصنيف'); return res.json(); }
+async function apiDeleteCategory(id){ const res=await fetch(`/categories/${id}`,{method:'DELETE'}); if(!res.ok) throw new Error('فشل حذف التصنيف'); return res; }
+
+function getMainImage(p) {
+  if (p.images && Array.isArray(p.images) && p.images.length > 0) return p.images[0];
+  return p.image || 'https://via.placeholder.com/90?text=No+Image';
+}
+
+function renderProducts(){
+  const c=$('#productsGrid');c.innerHTML='';
+  if(!FILTERED.length){c.innerHTML='<div style="grid-column:1/-1;color:#666;">لا توجد منتجات</div>';return;}
+  for(const p of FILTERED){
+    const imgSrc = getMainImage(p);
+    let sizesHtml = '';
+    if(p.sizes && p.sizes.trim().length > 0) sizesHtml = `<div class="tags-info"><span class="label">📏 المقاسات:</span> ${escapeHtml(p.sizes)}</div>`;
+    
+    let colorsHtml = '';
+    if(p.colors) {
+        let cArr = Array.isArray(p.colors) ? p.colors : p.colors.split(',');
+        cArr = cArr.filter(x => x && x.trim() !== '');
+        if(cArr.length > 0) {
+            let dots = '';
+            cArr.forEach(col => { dots += `<span class="color-dot" style="background-color:${col.trim()}" title="${col}"></span>`; });
+            colorsHtml = `<div class="tags-info"><span class="label">🎨 الألوان:</span> ${dots}</div>`;
+        }
+    }
+
+    c.insertAdjacentHTML('beforeend',`<div class="card">
+      <img class="thumb" src="${imgSrc}">
+      <div class="meta">
+        <h3>${escapeHtml(p.name)}</h3>
+        <p>${escapeHtml(p.description||'')}</p>
+        ${colorsHtml}
+        ${sizesHtml}
+        <div class="price">${Number(p.price).toLocaleString()} دج</div>
+        <div class="small">${escapeHtml(p.category_name||'')}</div>
+        <div class="actions">
+          <button class="edit" data-id="${p.id}">✏️ تعديل</button>
+          <button class="danger delete" data-id="${p.id}">🗑️ حذف</button>
+        </div>
+      </div>
+    </div>`);
+  }
+}
+
+function renderCategories(cats){
+  const box=$('#categoriesList'); box.innerHTML='';
+  if(!cats.length){box.innerHTML='<div style="color:#666;">لا توجد تصنيفات</div>';return;}
+  for(const c of cats){
+    box.insertAdjacentHTML('beforeend',`
+      <div class="cat-item">
+        <span>${escapeHtml(c.name)}</span>
+        <div class="cat-actions">
+          <button class="edit" data-id="${c.id}" data-name="${c.name}">✏️ تعديل</button>
+          <button class="danger delete" data-id="${c.id}">🗑️ حذف</button>
+        </div>
+      </div>
+    `);
+  }
+  box.querySelectorAll('.delete').forEach(b=>b.onclick=async()=>{
+    if(!confirm('تأكيد الحذف؟')) return;
+    try{await apiDeleteCategory(b.dataset.id);showMsg('🗑️ تم حذف التصنيف'); loadCategories();}
+    catch(e){showMsg('❌ '+e.message,false);}
+  });
+  box.querySelectorAll('.edit').forEach(b=>b.onclick=async()=>{
+    const newName=prompt('اسم جديد للتصنيف:',b.dataset.name);
+    if(!newName) return;
+    try{await apiUpdateCategory(b.dataset.id,newName);showMsg('✅ تم التحديث'); loadCategories();}
+    catch(e){showMsg('❌ '+e.message,false);}
+  });
+}
+
+// ------------------- إدارة النماذج (Forms) وتعديل FormData -------------------
+
+// الإضافة
+$('#addForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  
+  // نقوم بحذف حقل الصور الأصلي لأنه قد يحتوي على الترتيب العشوائي
+  fd.delete('images');
+  
+  // نضيف الصور من البفر المرتب
+  addFilesBuffer.forEach(file => {
+    fd.append('images', file);
+  });
+
+  try{
+    await apiCreateProduct(fd);
+    showMsg('✅ تم الإضافة');
+    $('#addModal').style.display='none';
+    e.target.reset();
+    clearColors('addColorsContainer', 'addColorsInput');
+    addFilesBuffer = []; // تصفير الصور
+    renderPreviews([], 'addPreviewContainer');
+    init();
+  }
+  catch(err){showMsg('❌ '+err.message,false);}
+});
+
+// التعديل
+$('#editForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!editingId) return;
+  const fd = new FormData(e.target);
+  
+  // إذا قام المستخدم باختيار صور جديدة، نستبدل الحقل بالبفر المرتب
+  if(editFilesBuffer.length > 0) {
+      fd.delete('images');
+      editFilesBuffer.forEach(file => {
+          fd.append('images', file);
+      });
+  }
+
+  try{await apiUpdateProduct(editingId,fd);showMsg('✅ تم التحديث');$('#editModal').style.display='none';init();}
+  catch(err){showMsg('❌ '+err.message,false);}
+});
+
+
+// ------------------- باقي الأحداث -------------------
+$('#productsGrid').addEventListener('click',async e=>{
+  const id=e.target.dataset.id;
+  if(e.target.classList.contains('delete')){
+    if(!confirm('تأكيد الحذف؟')) return;
+    try{await apiDeleteProduct(id);showMsg('🗑️ تم الحذف'); init();}
+    catch(err){showMsg('❌ '+err.message,false);}
+  }
+  if(e.target.classList.contains('edit')){
+    const p=PRODUCTS.find(x=>x.id==id);
+    if(!p)return;
+    editingId=id;
+    $('#editIdLabel').textContent='ID: '+id;
+    
+    // إفراغ بفر الصور الجديدة للتعديل
+    editFilesBuffer = [];
+    renderPreviews([], 'editPreviewContainer');
+    $('#editImagesInput').value = '';
+
+    const imgBox = $('#currentImages');
+    imgBox.innerHTML = '';
+    let imagesArr = (p.images && Array.isArray(p.images)) ? p.images : (p.image ? [p.image] : []);
+    if(imagesArr.length){
+        imagesArr.forEach(url => {
+          // عرض الصور الموجودة فقط للعرض
+          const img = document.createElement('img');
+          img.src = url; img.style.width='60px'; img.style.height='60px'; img.style.marginRight='5px';
+          imgBox.appendChild(img);
+        });
+    } else {
+        imgBox.innerHTML = '<span style="font-size:12px;color:#999;">لا توجد صور</span>';
+    }
+
+    const f=$('#editForm');
+    f.name.value=p.name; 
+    f.description.value=p.description||''; 
+    f.price.value=p.price||0; 
+    f.category_id.value=p.category_id||'';
+    f.sizes.value = p.sizes || ''; 
+    
+    clearColors('editColorsContainer', 'editColorsInput');
+    let dbColors = [];
+    if(p.colors) dbColors = Array.isArray(p.colors) ? p.colors : p.colors.split(',');
+    dbColors.forEach(c => {
+        if(c && c.trim()) createColorChip(c.trim(), 'editColorsContainer', 'editColorsInput');
+    });
+
+    $('#editModal').style.display='grid';
+  }
+});
+
+$('#catForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const name=$('#catName').value.trim();
+  if(!name) return;
+  try{await apiCreateCategory(name);showMsg('✅ تم الإضافة');$('#catName').value='';loadCategories();}
+  catch(err){showMsg('❌ '+err.message,false);}
+});
+
+$('#search').addEventListener('input',()=>filterRender());
+$('#filterCategory').addEventListener('change',()=>filterRender());
+
+function filterRender(){
+  const q=$('#search').value.trim().toLowerCase();
+  const catId=$('#filterCategory').value;
+  FILTERED=PRODUCTS.filter(p=>{
+    const matchText=(p.name||'').toLowerCase().includes(q)||(p.description||'').toLowerCase().includes(q);
+    const matchCat=!catId||p.category_id==catId;
+    return matchText&&matchCat;
+  });
+  renderProducts();
+}
+function escapeHtml(str){return (str||'').replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");}
+
+async function init(){
+  try{
+    PRODUCTS=await apiFetchProducts();
+    FILTERED=[...PRODUCTS];
+    renderProducts();
+    loadCategories();
+  }catch(e){showMsg('❌ '+e.message,false);}
+}
+async function loadCategories(){
+  try{
+    const cats=await apiFetchCategories();
+    renderCategories(cats);
+    const add=$('#addCategory'),edit=$('#editCategory'),filter=$('#filterCategory');
+    const defaultOpt = '<option value="">اختر التصنيف</option>';
+    add.innerHTML=defaultOpt; edit.innerHTML=defaultOpt; filter.innerHTML='<option value="">كل التصنيفات</option>';
+    for(const c of cats){
+      const opt=`<option value="${c.id}">${escapeHtml(c.name)}</option>`;
+      add.insertAdjacentHTML('beforeend',opt);
+      edit.insertAdjacentHTML('beforeend',opt);
+      filter.insertAdjacentHTML('beforeend',opt);
+    }
+  }catch(e){showMsg('❌ فشل جلب التصنيفات',false);}
+}
+
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.modal').style.display='none');
+
+$('#openAdd').onclick=()=>{
+  $('#addForm').reset();
+  clearColors('addColorsContainer', 'addColorsInput');
+  addFilesBuffer = [];
+  renderPreviews([], 'addPreviewContainer');
+  $('#addModal').style.display='grid';
+};
+
+document.querySelectorAll('.nav button').forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('section').forEach(sec=>sec.classList.remove('active'));
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  };
+});
+
+init();
+</script>
+</body>
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة الإدارة - Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --bg-dark: #0A0A0A;
+    --primary-blue: #2efcff;
+    --secondary-blue: #00BFFF;
+    --card-bg: rgba(15, 15, 15, 0.7);
+    --text: #ffffff;
+    --text-muted: #B0B0B0;
+    --border-base: #333;
+    --border-glow: #42ffff;
+    --glow-effect: 0 0 25px rgba(0, 255, 255, 0.4);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Almarai', sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: linear-gradient(135deg, #0A0A0A, #001f2f);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    color: var(--text);
+}
+
+/* خلفية متحركة ناعمة */
+.bg-animation {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.3;
+    z-index: -1;
+}
+.orb-1 {
+    top: -15%; right: -15%;
+    width: 500px; height: 500px;
+    background: var(--primary-blue);
+    animation: float 14s infinite alternate;
+}
+.orb-2 {
+    bottom: -15%; left: -15%;
+    width: 400px; height: 400px;
+    background: var(--secondary-blue);
+    animation: float 20s infinite alternate-reverse;
+}
+@keyframes float {
+    from { transform: translate(0,0); }
+    to { transform: translate(50px,50px); }
+}
+
+/* البطاقة */
+.container {
+    position: relative;
+    z-index: 10;
+    width: 90%;
+    max-width: 420px;
+    padding: 50px 40px;
+    background: var(--card-bg);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-radius: 20px;
+    border: 1px solid var(--border-glow);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    animation: fadeIn 0.8s ease-out forwards;
+    text-align: center;
+}
+
+/* العنوان */
+.container h1 {
+    color: var(--text);
+    font-size: 2rem;
+    margin-bottom: 10px;
+    font-weight: 800;
+    border-bottom: 3px solid var(--primary-blue);
+    padding-bottom: 10px;
+    display: inline-block;
+}
+
+/* أزرار لوحة التحكم */
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.dashboard a {
+    text-decoration: none;
+}
+.dashboard button {
+    padding: 16px;
+    font-size: 1.2rem;
+    font-weight: 800;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    color: var(--bg-dark);
+    background: var(--primary-blue);
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0,255,255,0.5);
+}
+.dashboard button:hover {
+    transform: translateY(-3px);
+    background: #00E6E6;
+    box-shadow: 0 8px 30px rgba(0,255,255,0.6);
+}
+.dashboard button:active {
+    transform: translateY(0);
+    box-shadow: 0 0 15px rgba(0,255,255,0.5);
+}
+
+/* الرسوم المتحركة للظهور */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* استجابة الهواتف */
+@media (max-width: 480px){
+    .container {
+        width: 90%;
+        padding: 35px 25px;
+    }
+    .container h1 { font-size: 1.7rem; }
+    .dashboard button { font-size: 1.1rem; padding: 14px; }
+}
+</style>
+</head>
+<body>
+
+<div class="bg-animation">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+</div>
+
+<div class="container">
+    <h1>مرحبا Admin</h1>
+
+    <div class="dashboard">
+        <a href="../Admin-Html/admin-products.html"><button>📦 قائمة المنتجات</button></a>
+        <a href="../Admin-Html/Orders.html"><button>🛒 قائمة الطلبات</button></a>
+    </div>
+</div>
+
+</body>
+</html>

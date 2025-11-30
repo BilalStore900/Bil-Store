@@ -1,0 +1,284 @@
+/* =============================
+   الأساسيات
+============================= */
+/* استدعاء الخطوط من Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap');
+
+body {
+  margin: 0;
+  font-family: 'Cairo', 'Poppins', sans-serif; /* الأولوية للعربية */
+  background: linear-gradient(135deg, #040404, #121212);
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden; /* يمنع ظهور شريط تمرير أفقي */
+}
+
+/* العناوين */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Cairo', 'Poppins', sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* النصوص العادية */
+p, span, a, button {
+  font-family: 'Cairo', 'Poppins', sans-serif;
+  font-weight: 400;
+}
+
+/* =============================
+   الشريط الجانبي (Sidebar)
+============================= */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 250px;
+  height: 100%;
+  background: #1e1e1e;
+  box-shadow: -2px 0 6px rgba(0,0,0,0.5);
+  padding: 60px 20px;
+  transition: transform 0.3s ease;
+  transform: translateX(100%); /* مخفية بالكامل */
+  z-index: 999;
+}
+
+.sidebar.open {
+  transform: translateX(0); /* تظهر عند الضغط */
+}
+
+.sidebar .login-btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #00f2ff;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.sidebar .login-btn:hover {
+  background:  #00f2ff;
+}
+
+.sidebar button {
+  margin-bottom: 15px;  /* 🔥 يخلي مسافة أسفل كل زر */
+}
+
+.sidebar button:last-child {
+  margin-bottom: 0; /* ما يكونش فراغ تحت آخر زر */
+}
+
+
+
+.sidebar .help {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #353434;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.sidebar .login-btn:hover {
+  background:  #30ab9e;
+}
+
+
+/* =============================
+   زر القائمة (هومبرغر)
+============================= */
+.menu-btn {
+  font-size: 26px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  margin: 10px;
+  z-index: 1000;
+}
+
+/* =============================
+   الرأس (Header)
+============================= */
+header {
+  position: sticky;
+  top: 0;
+ background: linear-gradient(90deg, #000000 0%, #00f5ff 100%);
+  padding: 10px;
+  z-index: 900;
+}
+
+.top-bar { display: flex; align-items: center; gap: 10px; }
+
+
+/* البحث */
+.search {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+#search {
+  width: 100%;
+  max-width: 500px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 25px;
+  outline: none;
+}
+
+/* التصنيفات */
+.categories {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.category-link {
+  text-decoration: none;
+  color: #fff;
+  font-size: 15px;
+  position: relative;
+  padding-bottom: 5px;
+}
+
+.category-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  /* أزل خاصية background: #ffffff; */
+  background: #f6fffd;
+  /* 1. أضف خاصية box-shadow لإنشاء التوهج (Gلو) */
+  /* الصيغة: (إزاحة س) (إزاحة ص) (نصف قطر الضبابية) (نصف قطر الانتشار) (اللون) */
+  box-shadow: 0 0 8px #ffffff; 
+  /* (0 0): لا يوجد إزاحة - (8px): ضبابية واسعة - (#ffffff): لون التوهج الأبيض */
+
+  transform: scaleX(0);
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* أضف box-shadow للانتقال السلس */
+}
+
+.category-link:hover::after,
+.category-link.active::after {
+  transform: scaleX(1);
+}
+
+/* =============================
+   شبكة المنتجات (Products Grid)
+============================= */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 15px;
+  padding: 20px;
+}
+
+/* ========================
+   تنسيق الكرت الأساسي
+   ======================== */
+.card {
+  background: #1e1e1e;
+  border-radius: 20px; /* يمكنك تعديل الانحناء هنا */
+  overflow: hidden;    /* يقص الصورة لتأخذ شكل الكرت */
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  
+  /* خيار إضافي: إذا أردت توسيط كل شيء داخل الكرت جذرياً */
+  display: flex;
+  flex-direction: column;
+}
+
+/* عند المرور بالماوس */
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0 20px #00f5ff;
+}
+
+/* عند الضغط */
+.card:active {
+  transform: scale(0.97);
+  box-shadow: 0 0 25px #00f5ff;
+}
+
+/* ========================
+   تنسيق الصورة
+   ======================== */
+.card img.thumb {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ========================
+   ✅ منطقة المعلومات (التعديل هنا) ✅
+   ======================== */
+.card .meta {
+  padding: 10px 5px;   /* زدت الحشوة قليلاً */
+  
+  /* الخصائص المسؤولة عن التوسيط */
+  text-align: center;  /* يوسط النصوص */
+  display: flex;       /* ينظم العناصر */
+  flex-direction: column; /* يرتبهم عمودياً */
+  align-items: center; /* يوسط العناصر داخل الفليكس */
+  justify-content: center;
+}
+
+/* ========================
+   تنسيق النصوص
+   ======================== */
+.card .title {
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #fff;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.825);
+}
+
+.card .desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #ccc;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  
+  /* للتأكد من توسيط الوصف حتى لو كان قصيراً */
+  width: 90%; 
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.card .price {
+  color: #00ffe5e8;
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 16px; /* حجم مناسب للسعر */
+}
+
+.card .category {
+  font-size: 12px;
+  color: #aaa;
+  
+  /* جعل التصنيف يبدو كزر صغير أو علامة (اختياري لجمالية أكثر) */
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+ 

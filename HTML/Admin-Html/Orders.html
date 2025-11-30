@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="../../../../CSS/Admin-Css/Orders.css">
+  <title>لوحة الإدارة - الطلبات</title>
+ 
+</head>
+<body>
+
+  <h1>📝 إدارة الطلبات</h1>
+
+  <input type="text" id="searchInput" placeholder="ابحث باسم الزبون أو رقم الهاتف">
+
+  <table>
+    <thead>
+      <tr>
+        <th>اسم الزبون</th>
+        <th>📞 الهاتف</th>
+        <th>المنتج</th> 
+        <th>إجراءات</th>
+      </tr>
+    </thead>
+    <tbody id="ordersTable">
+      <tr><td colspan="4">جاري تحميل الطلبات...</td></tr>
+    </tbody>
+  </table>
+
+  <div id="orderModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script>
+    const ordersTable = document.getElementById("ordersTable");
+    const searchInput = document.getElementById("searchInput");
+    const modal = document.getElementById("orderModal");
+    const modalBody = document.getElementById("modalBody");
+    const closeModal = document.getElementById("closeModal");
+
+    let allOrders = [];
+
+    // جلب الطلبات من السيرفر
+    async function loadOrders() {
+      try {
+        const res = await fetch("/orders"); 
+        if (!res.ok) throw new Error("فشل جلب الطلبات");
+        allOrders = await res.json();
+        displayOrders(allOrders);
+      } catch (err) {
+        console.error(err);
+        ordersTable.innerHTML = "<tr><td colspan='4'>تعذر تحميل الطلبات. تحقق من اتصالك بالـ API.</td></tr>";
+      }
+    }
+
+    // عرض الجدول
+    function displayOrders(orders) {
+      if (!orders.length) {
+        ordersTable.innerHTML = "<tr><td colspan='4'>لا توجد طلبات</td></tr>";
+        return;
+      }
+
+      ordersTable.innerHTML = "";
+      orders.forEach(order => {
+        // التحقق من وجود ملاحظات
+        const hasNotes = order.customer_notes && order.customer_notes.trim() !== "";
+        const noteIcon = hasNotes ? '<span title="يوجد ملاحظة" style="cursor:help;"></span>' : '';
+
+        // التحقق من وجود خيارات (لون أو مقاس) لعرضها باختصار في الجدول
+        let specsInfo = '';
+        if(order.customer_color) specsInfo += '<span class="specs-badge" title="تم تحديد لون"></span>';
+        if(order.customer_size) specsInfo += '<span class="specs-badge" title="تم تحديد مقاس"></span>';
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td class="clickable">
+            ${order.customer_name} ${noteIcon} 
+          </td>
+          <td class="clickable">${order.customer_phone || '-'}</td>
+          <td class="clickable">
+            ${order.product_name}
+            ${specsInfo} <!-- عرض أيقونات المواصفات هنا -->
+          </td>
+          <td>
+            ${order.status !== 'confirmed' ? `<button class="confirm" onclick="confirmOrder(${order.id})">تأكيد</button>` : '<span style="color:var(--color-confirm); font-weight:bold; margin-left:10px;">تم التأكيد</span>'}
+            <button class="delete" onclick="deleteOrder(${order.id})">حذف</button>
+          </td>
+        `;
+
+        // إضافة حدث النقر للخلايا
+        tr.querySelectorAll('.clickable').forEach(cell => {
+          cell.addEventListener("click", () => showOrderDetails(order));
+        });
+
+        ordersTable.appendChild(tr);
+      });
+    }
+
+    // --- دالة عرض التفاصيل (تم التعديل لإظهار الألوان والمقاسات) ---
+    function showOrderDetails(order) {
+      const date = new Date(order.created_at || Date.now()).toLocaleString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', hour12: false
+      });
+      
+      const formatNumber = (num) => {
+        if (!num) return '0 DA';
+        return parseFloat(num).toLocaleString('en-US', { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+        }) + ' DA';
+      }
+      
+      const unitPrice = formatNumber(order.product_price);
+      const totalPrice = formatNumber(order.total_price);
+      const notesContent = order.customer_notes ? order.customer_notes : 'لا توجد ملاحظات إضافية';
+      const notesColor = order.customer_notes ? '#d9534f' : '#888';
+
+      // --- تجهيز HTML للون والمقاس ---
+      
+      // 1. اللون
+      let colorRow = '';
+      if (order.customer_color) {
+        colorRow = `
+          <div class="info-row">
+            <div class="label">  اللون المختار:</div>
+            <div class="value" style="display:flex; align-items:center; gap:8px;">
+               <span class="color-preview" style="background-color: ${order.customer_color};"></span>
+               <!-- محاولة عرض كود اللون كنص أيضاً -->
+               <span style="font-size:0.9em; color:#666;">${order.customer_color}</span>
+            </div>
+          </div>
+        `;
+      } else {
+        colorRow = `<div class="info-row"><div class="label">  اللون المختار:</div><div class="value" style="color:#999;">-</div></div>`;
+      }
+
+      // 2. المقاس
+      let sizeRow = '';
+      if (order.customer_size) {
+        sizeRow = `
+          <div class="info-row">
+            <div class="label">  المقاس:</div>
+            <div class="value" style="font-weight:bold;">${order.customer_size}</div>
+          </div>
+        `;
+      } else {
+        sizeRow = `<div class="info-row"><div class="label">  المقاس:</div><div class="value" style="color:#999;">-</div></div>`;
+      }
+
+      // بناء المودال
+      modalBody.innerHTML = `
+        <div class="paper-header">
+            <h2>تفاصيل الطلب</h2>
+            <small>رقم الفاتورة: INV-${order.id}</small>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-row"><div class="label">اسم الزبون:</div><div class="value">${order.customer_name}</div></div>
+            <div class="info-row"><div class="label">رقم الهاتف:</div><div class="value">${order.customer_phone || 'غير متوفر'}</div></div>
+            <div class="info-row"><div class="label">العنوان:</div><div class="value">${order.customer_address || 'استلام من المتجر'}</div></div>
+            
+            <div class="info-row" style="background-color: #f9f9f9; padding: 5px; border-radius: 4px;">
+                <div class="label">  ملاحظة الزبون:</div>
+                <div class="value" style="white-space: pre-wrap; color: ${notesColor}; font-weight: bold;">${notesContent}</div>
+            </div>
+
+            <div class="info-row"><div class="label">تاريخ الطلب:</div><div class="value">${date}</div></div>
+            
+            <div class="info-row" style="margin-top:10px; border-top:1px solid #ccc; padding-top:10px;"></div>
+            
+            <div class="info-row"><div class="label">المنتج:</div><div class="value"><strong>${order.product_name}</strong></div></div>
+            
+            <!-- 👇 إضافة صفوف اللون والمقاس هنا 👇 -->
+            ${colorRow}
+            ${sizeRow}
+            <!-- 👆 -------------------------- 👆 -->
+
+            <div class="info-row"><div class="label">الكمية:</div><div class="value">${order.quantity || 1}</div></div>
+            <div class="info-row"><div class="label">سعر الوحدة:</div><div class="value">${unitPrice}</div></div>
+            <div class="info-row"><div class="label">المجموع الكلي:</div><div class="value" style="font-size:1.2em; color:var(--color-dark-blue);">${totalPrice}</div></div>
+            <div class="info-row"><div class="label">الحالة:</div><div class="value">${order.status === 'confirmed' ? 'مؤكد' : 'بانتظار الدفع'}</div></div>
+        </div>
+
+        <div class="modal-footer">
+            <p>توقيع المستلم: ...........................</p>
+            <p style="margin-top:10px;">شكراً لتعاملكم معنا.</p>
+        </div>
+      `;
+      modal.style.display = "block";
+    }
+
+    closeModal.onclick = () => { modal.style.display = "none"; }
+    window.onclick = e => { if (e.target === modal) modal.style.display = "none"; }
+
+    async function confirmOrder(orderId) {
+      if(!confirm("هل تريد تأكيد هذا الطلب؟")) return;
+      try {
+        const res = await fetch(`/orders/${orderId}/confirm`, { method: "PUT", headers: { "Content-Type": "application/json" } });
+        if (!res.ok) throw new Error("فشل");
+        await loadOrders(); 
+      } catch (err) {
+        console.error(err);
+        alert("⚠️ حدث خطأ أثناء التأكيد");
+      }
+    }
+
+    async function deleteOrder(orderId) {
+      if (!confirm("⚠️ هل أنت متأكد أنك تريد حذف هذا الطلب؟")) return;
+      try {
+        const res = await fetch(`/orders/${orderId}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("فشل");
+        
+        const rows = Array.from(ordersTable.rows);
+        const rowIndex = rows.findIndex(r => r.innerText.includes(`#${orderId}`));
+   
+        loadOrders(); 
+      } catch (err) {
+        console.error(err);
+        alert("❌ خطأ في حذف الطلب");
+      }
+    }
+
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.toLowerCase();
+      const filtered = allOrders.filter(order =>
+        order.customer_name.toLowerCase().includes(query) ||
+        (order.customer_phone && order.customer_phone.includes(query))
+      );
+      displayOrders(filtered);
+    });
+
+    loadOrders();
+  </script>
+</body>
+</html>

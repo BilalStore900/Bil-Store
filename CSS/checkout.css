@@ -1,0 +1,261 @@
+ 
+
+/* ===== الخطوط ===== */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&family=Poppins:wght@400;600;800&display=swap');
+
+/* ===== المتغيرات ===== */
+:root {
+  --color-bg-main: #0a0a0a;
+  --color-bg-card: #000000;
+  --color-bg-input: #1f1f1f;
+  --color-text-light: #f5f5f5;
+  --color-text-muted: #999999;
+  --color-accent: #00f2ff;
+  --color-accent-hover: #00f2ff;
+
+  --radius: 8px;
+  --spacing-unit: 16px;
+  --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* ===== قاعدة عامة ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: 'Cairo', 'Poppins', system-ui, sans-serif;
+  background: linear-gradient(135deg, #000000, #000000, #000000);
+  color: var(--color-text-light);
+  padding: calc(2 * var(--spacing-unit));
+  animation: fadeIn 1s ease forwards;
+}
+
+/* ===== العنوان ===== */
+h1 {
+  text-align: center;
+  margin-bottom: calc(2 * var(--spacing-unit));
+  font-size: 1.9rem;
+  color: var(--color-accent);
+  font-weight: 800;
+  opacity: 0;
+  transform: translateY(-20px);
+  animation: slideFadeDown 0.8s ease forwards;
+}
+
+/* ===== روابط ===== */
+a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: var(--color-accent);
+}
+
+/* ===== الحاوية ===== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  gap: calc(2 * var(--spacing-unit));
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+/* ===== بطاقة المنتج ===== */
+#productInfo {
+  background-color: var(--color-bg-card);
+  padding: calc(1.5 * var(--spacing-unit));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-subtle);
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideFadeUp 0.8s ease forwards;
+  animation-delay: 0.3s;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+#productInfo:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px #00f2ff;
+}
+
+#productInfo h2 {
+  margin: 0 0 calc(0.5 * var(--spacing-unit));
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+#productInfo p {
+  margin: calc(0.5 * var(--spacing-unit)) 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+#productInfo .unit-price {
+  color: var(--color-accent);
+  font-weight: 800;
+  font-size: 1.2rem;
+  margin-top: var(--spacing-unit);
+}
+
+/* ===== السعر الإجمالي ===== */
+#totalPrice {
+  text-align: center;
+  font-weight: 800;
+  color: var(--color-text-light);
+  background-color: var(--color-bg-main);
+  border-top: 2px solid var(--color-accent);
+  padding: var(--spacing-unit);
+  font-size: 1.25rem;
+  margin-top: calc(1.5 * var(--spacing-unit));
+  border-radius: 0 0 var(--radius) var(--radius);
+  box-shadow: 0 -2px 10px #40E0D0;
+}
+
+/* ===== الاستمارة ===== */
+form#orderForm {
+  background-color: var(--color-bg-card);
+  padding: calc(2 * var(--spacing-unit));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-subtle);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideFadeUp 0.8s ease forwards;
+  animation-delay: 0.5s;
+}
+
+/* ===== الحقول ===== */
+fieldset {
+  border: none;
+  padding: 0;
+  margin-bottom: calc(1.5 * var(--spacing-unit));
+}
+
+legend {
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: var(--spacing-unit);
+}
+
+label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: calc(1 * var(--spacing-unit)) 0 calc(0.5 * var(--spacing-unit));
+  transition: color 0.2s;
+}
+input:focus + label,
+textarea:focus + label {
+  color: var(--color-accent);
+}
+
+/* ===== الإدخال ===== */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+textarea {
+  width: 100%;
+  padding: calc(0.75 * var(--spacing-unit)) var(--spacing-unit);
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  background-color: var(--color-bg-input);
+  color: var(--color-text-light);
+  font-size: 1rem;
+  resize: vertical;
+  transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px #0d878e;
+  background-color: #000000;
+}
+
+/* ===== زر الإرسال ===== */
+button[type="submit"] {
+  display: block;
+  width: 100%;
+  margin-top: calc(2 * var(--spacing-unit));
+  padding: var(--spacing-unit);
+  border-radius: var(--radius);
+  border: none;
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #000000; /* تم تغيير لون النص إلى الأسود */
+  background-color: var(--color-accent);
+  cursor: pointer;
+  box-shadow: 0 6px 20px  #00f2ff;
+  transition: background-color 0.2s, transform 0.15s, box-shadow 0.2s;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideFadeUp 0.8s ease forwards;
+  animation-delay: 0.7s;
+}
+
+button[type="submit"]:hover {
+  background-color: var(--color-accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px#40E0D0;
+}
+
+/* ===== الرسائل ===== */
+#message {
+  margin-top: var(--spacing-unit);
+  text-align: center;
+  font-weight: 600;
+}
+#message.success {
+  color: #4CAF50;
+}
+#message.error {
+  color:  #ff0000;
+}
+
+/* ===== أنيميشن ===== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideFadeDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== تخطيط سطح المكتب ===== */
+@media (min-width: 800px) {
+  .container {
+    grid-template-columns: 1fr 400px;
+  }
+  .container > #productInfo {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .container > form#orderForm {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  #productInfo {
+    padding: calc(2 * var(--spacing-unit));
+    text-align: left;
+    position: sticky;
+    top: calc(2 * var(--spacing-unit));
+  }
+  #totalPrice {
+    text-align: left;
+    margin-top: calc(2 * var(--spacing-unit));
+    border-radius: var(--radius);
+    background-color: var(--color-bg-main);
+  }
+}

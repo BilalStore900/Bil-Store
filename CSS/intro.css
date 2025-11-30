@@ -1,0 +1,169 @@
+/* نفس إعدادات الجسم والخلفية */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Poppins', 'Cairo', sans-serif;
+  font-family: 'Playfair Display', serif;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url('intro.mp4') no-repeat center center/cover;
+}
+
+/* صندوق الزجاجي مع حركة Fade-in */
+.glass-box {
+  background: rgba(255, 255, 255, 0.15); 
+  border-radius: 15px;
+  padding: 20px; 
+  width: 100%; 
+  max-width: 400px; 
+  text-align: center;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  
+  /* الحركة */
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInBox 1s forwards;
+  animation-delay: 0.5s; /* يبدأ بعد نصف ثانية */
+}
+
+/* النصوص تظهر تدريجيًا */
+ .glass-box h1 {
+  animation-delay: 1s; /* بعد صندوق الزجاجي */
+  margin-bottom: 15px;
+  color: #fff;
+  font-size: 1.8em;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.7), 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+
+.glass-box h1 {
+  animation-delay: 1s; /* بعد صندوق الزجاجي */
+  margin-bottom: 15px;
+  color: #fff;
+  font-size: 1.8em;
+}
+
+.glass-box h2 {
+  animation-delay: 1.3s;
+  margin-bottom: 20px;
+  color: #f0f0f0;
+  font-size: 0.95em;
+  line-height: 1.4em;
+}
+
+/* زر الشراء يظهر من الأسفل */
+.glass-box button {
+  background-color: #03b7f3;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.95em;
+  cursor: pointer;
+  transition: 0.3s;
+
+  opacity: 0;
+  transform: translateY(20px);
+  animation: riseButton 0.8s forwards;
+  animation-delay: 1.6s;
+}
+
+.glass-box button:hover {
+  background-color: #0460e9;
+}
+
+/* التحركات */
+@keyframes fadeInBox {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInText {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes riseButton {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* تحسينات للشاشات الكبيرة */
+@media (min-width: 768px) {
+  .glass-box {
+    padding: 40px;
+    max-width: 500px;
+  }
+
+  .glass-box h1 {
+    font-size: 2em;
+  }
+
+  .glass-box h2 {
+    font-size: 1em;
+  }
+
+  .glass-box button {
+    font-size: 1em;
+    padding: 12px 25px;
+  }
+}
+sidebar {
+  position: fixed; /* ثابت أثناء التمرير */
+  top: 50%; /* منتصف الشاشة عموديًا */
+  right: 0; /* على اليمين، ضع left:0 إذا أردت على اليسار */
+  transform: translateY(-50%);
+  background-color: rgba(238, 24, 24, 0.9); /* خلفية شبه شفافة */
+  padding: 10px;
+  border-radius: 8px 0 0 8px; /* حواف دائرية من جهة الصفحة */
+  z-index: 1000;
+}
+
+.sidebar button {
+  background-color: #fff;
+  color: #ee1818;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: 0.3s;
+}
+
+.sidebar button:hover {
+  background-color: #f4f4f4;
+}
+
+
+/* Animation للاختفاء */
+@keyframes fadeOutBox {
+  to {
+    opacity: 0;
+    transform: translateY(-20px); /* يتحرك للأعلى */
+  }
+}
+
+@keyframes fadeOutText {
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes slideUpButton {
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}

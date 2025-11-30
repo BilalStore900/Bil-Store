@@ -1,0 +1,115 @@
+    :root {
+      --bg-dark: #0B0B0B;
+      --primary-blue: #00F7FF;
+      --text: #ffffff;
+      --text-muted: #cfcfcf;
+      --card-bg: #111;
+      --input-bg: #0d0d0d;
+      --border: #1f1f1f;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Almarai', sans-serif;
+    }
+
+    body {
+      background: var(--bg-dark);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* البطاقة */
+/* البطاقة بزوايا غير متماثلة */
+.login-box {
+  background: var(--card-bg);
+  padding: 40px 35px;
+  width: 100%;
+  max-width: 380px;
+
+  /* الزوايا غير متماثلة */
+  border-radius: 2px 35px 2px 35px; 
+  /*    TL   TR   BL   BR  */
+
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  /* توهج خفيف */
+  box-shadow: 0 0 50px rgba(46, 252, 255, 0.15);
+}
+
+
+    /* العنوان */
+    .login-box h2 {
+      color: var(--text);
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+      border-bottom: 3px solid var(--primary-blue);
+      padding-bottom: 10px;
+      width: fit-content;
+      margin: 0 auto;
+    }
+
+    /* الحقول */
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      color: var(--text-muted);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    input {
+      padding: 13px 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--input-bg);
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.3s, box-shadow 0.3s;
+    }
+
+    input:focus {
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 6px rgba(0, 247, 255, 0.4);
+    }
+
+    /* الزر */
+    button {
+      margin-top: 10px;
+      padding: 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--primary-blue);
+      color: #000;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #00e6ee;
+    }
+
+    @media(max-width: 420px) {
+      .login-box {
+        padding: 30px 25px;
+      }
+      .login-box h2 {
+        font-size: 1.6rem;
+      }
+    }

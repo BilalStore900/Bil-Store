@@ -1,0 +1,261 @@
+/*
+  ===================================================================
+  1. الخطوط والألوان الأساسية (Dark Elegant Theme)
+  ===================================================================
+*/
+@import url('https://fonts.googleapis.com/css2?family=Almarai:wght@300;400;700;800&display=swap');
+
+:root {
+  --color-bg: #000000;
+  --color-surface: #050505;
+  --color-accent: #00f5ff;          /* الفيروزي المشع */
+  --color-accent-dim: rgba(0, 245, 255, 0.1);
+  --color-text: #f5f5f5;
+  --color-text-muted: #bbbbbb;
+  
+  --shadow-glow: 0 0 15px var(--color-accent);
+  --border-radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Almarai', sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.6;
+  min-height: 100vh;
+  direction: rtl;
+  overflow-x: hidden; /* منع التمرير العرضي */
+  animation: fadeInBody 1s ease forwards;
+}
+
+@keyframes fadeInBody { from { opacity: 0; } to { opacity: 1; } }
+
+/*
+  ===================================================================
+  2. الهيدر (Header)
+  ===================================================================
+*/
+header {
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--color-accent);
+  box-shadow: 0 4px 20px rgba(0, 245, 255, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  animation: slideDown 0.8s ease forwards;
+}
+
+header a {
+  color: var(--color-text);
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 1.1em;
+  transition: color 0.3s;
+}
+header a:hover { color: var(--color-accent); text-shadow: 0 0 8px var(--color-accent); }
+
+@keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+
+/*
+  ===================================================================
+  3. حاوية المنتج (Layout Wrapper)
+  ===================================================================
+*/
+#productDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 20px auto;
+  opacity: 0;
+  animation: fadeUp 1s ease forwards 0.3s;
+}
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/*
+  ===================================================================
+  4. معرض الصور (Smart Gallery) - التعديل الجوهري
+  ===================================================================
+*/
+.gallery-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* يضمن توسيط الصورة إذا كانت أقل من عرض الشاشة */
+  gap: 15px;
+}
+
+/* الصورة الرئيسية: تتمدد حسب حجمها الطبيعي حتى تصل للحد الأقصى */
+.main-image {
+  display: block;
+  width: auto;            /* العرض حسب الصورة */
+  height: auto;           /* الطول حسب الصورة */
+  max-width: 100%;        /* لا تتجاوز عرض الحاوية */
+  max-height: 450px;      /* أقصى ارتفاع للموبايل */
+  
+  border-radius: var(--border-radius);
+  border: 1px solid #333;
+  
+  /* التوهج يلتصق بالحواف الآن لأن العرض والارتفاع أوتوماتيكي */
+  box-shadow: var(--shadow-glow); 
+  
+  background-color: #000; /* خلفية احتياطية */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: zoom-in;
+}
+
+.main-image:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 25px var(--color-accent);
+}
+
+/* شريط الصور المصغرة */
+.thumbnails {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  justify-content: center; /* توسيط المصغرات */
+  flex-wrap: wrap;         /* السماح بالنزول لسطر جديد إذا كثرت */
+}
+
+.thumb {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: all 0.3s;
+  background-color: #111;
+}
+
+.thumb:hover { opacity: 1; transform: translateY(-3px); }
+.thumb.active {
+  border-color: var(--color-accent);
+  opacity: 1;
+  box-shadow: 0 0 10px var(--color-accent-dim);
+}
+
+/*
+  ===================================================================
+  5. تفاصيل النصوص (Info)
+  ===================================================================
+*/
+.product-info {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 5px;
+}
+
+/* العنوان */
+#productDetails h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #fff;
+  border-right: 4px solid var(--color-accent);
+  padding-right: 15px;
+  line-height: 1.2;
+}
+
+/* الوصف */
+.description {
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 10px;
+  
+  /* تقصير النص */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.description.expanded { -webkit-line-clamp: unset; overflow: visible; }
+
+.read-more {
+  color: var(--color-accent);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 20px;
+  display: inline-block;
+}
+.read-more:hover { text-decoration: underline; }
+
+/* السعر والزر */
+#productDetails .price {
+  font-size: 2rem;
+  font-weight: 900;
+  color: var(--color-accent);
+  margin-top: auto;
+  margin-bottom: 20px;
+  text-shadow: 0 0 10px var(--color-accent-dim);
+}
+
+#productDetails button {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #000;
+  background: var(--color-accent);
+  border: none;
+  border-radius: 50px; /* شكل كبسولة عصري */
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0, 245, 255, 0.4);
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#productDetails button:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 0 35px rgba(0, 245, 255, 0.6);
+  background: #fff; /* تأثير وميض عند التحويم */
+}
+
+#productDetails button:active { transform: scale(0.95); }
+
+/*
+  ===================================================================
+  6. ميديا الشاشات الكبيرة (Desktop)
+  ===================================================================
+*/
+@media (min-width: 900px) {
+  #productDetails {
+    display: grid;
+    /* تقسيم: 45% صور - 55% نصوص */
+    grid-template-columns: 0.8fr 1.2fr; 
+    gap: 60px;
+    align-items: start; /* يمنع تمدد الصورة عمودياً */
+    padding: 60px;
+    background: radial-gradient(circle at top left, #111, #000);
+    border-radius: 20px;
+    border: 1px solid #222;
+  }
+
+  .gallery-container {
+    position: sticky; /* تثبيت الصور أثناء تمرير الوصف الطويل */
+    top: 100px;
+  }
+
+  .main-image {
+    max-height: 550px; /* زيادة الارتفاع المسموح به للكمبيوتر */
+  }
+
+  #productDetails h1 { font-size: 2.5rem; margin-bottom: 20px; }
+  
+  .description { font-size: 1.1rem; margin-bottom: 20px; -webkit-line-clamp: 5; }
+  
+  #productDetails button {
+    max-width: 300px; /* تحديد عرض الزر */
+  }
+}

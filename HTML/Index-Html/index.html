@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bil-Store</title>
+  <link rel="stylesheet" href="../../CSS/index.css">
+</head>
+<body>
+
+<!-- الشريط الجانبي -->
+ <div id="sidebar" class="sidebar">
+  <button onclick="window.location.href='../Login-Html/login.html'" class="login-btn">تسجيل الدخول</button>
+  <button onclick="window.location.href='help.html'" class="help">
+    المساعدة ودعم
+  </button>
+</div>
+
+
+<!-- الجزء العلوي -->
+<header>
+  <div class="top-bar">
+    <button id="menuBtn" class="menu-btn">☰</button>
+
+    <div class="search">
+      <input id="search" type="search" placeholder="ابحث باسم المنتج أو الوصف..." />
+    </div>
+  </div>
+
+  <nav class="categories" id="categories"></nav>
+</header>
+
+<!-- شبكة المنتجات -->
+<div id="productsGrid" class="grid"></div>
+
+<script>
+// ========== نفس السكربت تاعك بلا تغيير كبير ==========
+const $ = sel => document.querySelector(sel);
+const productsGrid = $('#productsGrid');
+const categoriesContainer = $('#categories');
+const searchInput = $('#search');
+
+let PRODUCTS = [];
+let CATEGORIES = [];
+let activeCategory = '';
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[m]));
+}
+
+async function fetchCategories() {
+  try {
+    const res = await fetch('/categories');
+    if(!res.ok) throw new Error('فشل تحميل التصنيفات');
+    CATEGORIES = await res.json();
+    renderCategories();
+  } catch(e) { console.error('فشل تحميل التصنيفات', e); }
+}
+
+function renderCategories() {
+  categoriesContainer.innerHTML = '';
+
+  const allLink = document.createElement('a');
+  allLink.textContent = 'الكل ';
+  allLink.className = activeCategory === '' ? 'category-link active' : 'category-link';
+  allLink.href = "#";
+  allLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    activeCategory = '';
+    renderProducts(PRODUCTS);
+    renderCategories();
+  });
+  categoriesContainer.appendChild(allLink);
+
+  CATEGORIES.forEach(c => {
+    const link = document.createElement('a');
+    link.textContent = escapeHtml(c.name);
+    link.href = "#";
+    link.className = activeCategory === String(c.id) ? 'category-link active' : 'category-link';
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      activeCategory = String(c.id);
+      renderProducts(PRODUCTS);
+      renderCategories();
+    });
+    categoriesContainer.appendChild(link);
+  });
+}
+
+async function fetchProducts() {
+  try {
+    const res = await fetch('/products');
+    if(!res.ok) throw new Error('فشل تحميل المنتجات');
+    PRODUCTS = await res.json();
+    renderProducts(PRODUCTS);
+  } catch (err) {
+    console.error(err);
+    productsGrid.innerHTML = '<div>❌ خطأ في تحميل المنتجات</div>';
+  }
+}
+
+// ... (بقية الكود الخاص بك في الأعلى) ...
+
+function renderProducts(list) {
+  let filtered = list;
+  if(activeCategory) filtered = filtered.filter(p => String(p.category_id) === activeCategory);
+  const query = searchInput.value.trim().toLowerCase();
+  if(query) filtered = filtered.filter(p => (p.name||'').toLowerCase().includes(query) || (p.description||'').toLowerCase().includes(query));
+
+  productsGrid.innerHTML = '';
+  if(!filtered.length) {
+    productsGrid.innerHTML = '<div>لا توجد منتجات حاليًا</div>';
+    return;
+  }
+
+  // استخدام متغير لتحديد التأخير الزمني لكل بطاقة
+  let delay = 0.1; // يبدأ التأخير من 0.1 ثانية
+
+  filtered.forEach((p, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    const imgSrc = (p.image && p.image !== 'null') ? p.image : 'https://via.placeholder.com/400x300?text=No+Image';
+
+    card.innerHTML = `
+      <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(p.name)}" class="thumb">
+      <div class="meta">
+        <div class="title">${escapeHtml(p.name)}</div>
+         
+        <div class="price">${Number(p.price).toLocaleString()} DA</div>
+         <div class="category">${escapeHtml(p.category_name || '')}</div>
+      </div>
+    `;
+
+    card.addEventListener('click', () => {
+      window.location.href = `product.html?id=${p.id}`;
+    });
+
+    // 👈 [الإضافة الجديدة 1] تعيين خاصية CSS مخصصة للتأخير 
+    // يتم حساب التأخير المتزايد (0.1s, 0.2s, 0.3s, وهكذا)
+    card.style.setProperty('--animation-delay', `${delay * (index + 1)}s`);
+    // يمكن استخدام طريقة أبسط:
+    // card.style.animationDelay = `${delay * (index + 1)}s`; 
+
+    productsGrid.appendChild(card);
+  });
+}
+
+// ... (بقية الكود الخاص بك في الأسفل) ...
+
+searchInput.addEventListener('input', () => renderProducts(PRODUCTS));
+
+fetchCategories().then(fetchProducts);
+
+// زر القائمة الجانبية
+const menuBtn = document.getElementById('menuBtn');
+const sidebar = document.getElementById('sidebar');
+
+menuBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+});
+
+document.addEventListener('click', (e) => {
+  if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
+    sidebar.classList.remove('open');
+  }
+});
+</script>
+
+</body>
+</html>

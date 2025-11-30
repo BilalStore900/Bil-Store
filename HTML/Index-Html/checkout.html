@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>إتمام الشراء</title>
+  <link rel="stylesheet" href="../../CSS/checkout.css">
+  
+  <style>
+    /* 🎨 المتغيرات اللونية */
+    :root {
+      --true-black: #000000;
+      --dark-grey: #1c1c1c;
+      --neon-blue: #00f2ff;
+      --neon-glow: 0 0 10px rgba(0, 242, 255, 0.7);
+    }
+
+    /* --- تنسيق خيارات الألوان والمقاسات --- */
+    .options-container {
+      margin-bottom: 15px;
+    }
+    
+    .color-wrapper {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 5px;
+    }
+
+    .color-option {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #000000;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 5px rgb(0, 0, 0);
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    /* عند اختيار اللون */
+    .color-option.selected {
+      border: 3px solid var(--neon-blue);
+      box-shadow: 0 0 8px var(--neon-blue);
+      transform: scale(1.15);
+    }
+
+    /* تنسيق قائمة المقاسات */
+.size-select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
+  margin-top: 5px;
+  font-size: 16px;
+  /* التعديلات هنا: */
+  background: #2b2b2b;  
+  color: #ffffff; 
+   }   
+
+    /* --- تنسيق رسالة النجاح (مود نيون) --- */
+    .success-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: var(--true-black);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    .success-card {
+      text-align: center;
+      padding: 40px;
+      max-width: 90%;
+      width: 400px;
+      background: var(--dark-grey);
+      border: 1px solid #333;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.1);
+    }
+
+    /* SVG Animation */
+    .checkmark-svg {
+      width: 80px;
+      height: 80px;
+      display: block;
+      margin: 0 auto 20px auto;
+      stroke-width: 2.5;
+      stroke: var(--neon-blue);
+      stroke-miterlimit: 10;
+      filter: drop-shadow(0 0 5px var(--neon-blue));
+      animation: scale .3s ease-in-out .9s both;
+    }
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 2;
+      stroke: var(--neon-blue);
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    .checkmark-check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+
+    @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+    @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .success-title { color: var(--neon-blue); font-size: 26px; margin-bottom: 10px; font-weight: bold; text-shadow: var(--neon-glow); }
+    .success-text { font-size: 16px; color: #e0e0e0; margin-bottom: 30px; line-height: 1.6; }
+
+    .home-btn {
+      display: inline-block;
+      background-color: transparent;
+      color: var(--neon-blue);
+      padding: 12px 30px;
+      text-decoration: none;
+      border: 2px solid var(--neon-blue);
+      border-radius: 50px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 5px rgba(0, 242, 255, 0.2);
+    }
+    .home-btn:hover {
+      background-color: var(--neon-blue);
+      color: var(--true-black);
+      box-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  
+  <h1 id="pageTitle">إتمام عملية الشراء</h1>
+
+  <div id="productInfo">
+    <p>⏳ تحميل بيانات المنتج...</p>
+  </div>
+
+  <form id="orderForm">
+    
+    <!-- قسم خيارات المنتج (ألوان ومقاسات) -->
+    <fieldset id="productOptionsSet" style="display:none;">
+      <legend>خيارات المنتج</legend>
+      
+      <!-- الألوان -->
+      <div id="colorsSection" class="options-container" style="display:none;">
+        <label style="font-weight:bold;">اختر اللون:</label>
+        <div id="colorsContainer" class="color-wrapper"></div>
+        <input type="hidden" name="color" id="selectedColorInput">
+        <p id="colorError" style="color:red; font-size:12px; display:none;">يرجى اختيار لون</p>
+      </div>
+
+      <!-- المقاسات -->
+      <div id="sizesSection" class="options-container" style="display:none;">
+        <label style="font-weight:bold;">اختر المقاس:</label>
+        <div id="sizesContainer"></div> <!-- سيتم حقن Select أو Input هنا -->
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>معلوماتك الشخصية</legend>
+      <label>اسمك الكامل:</label>
+      <input type="text" name="customer_name" required placeholder="الاسم واللقب">
+
+      <label>رقم الهاتف:</label>
+      <input type="tel" name="customer_phone" required placeholder="0XXXXXXXXX">
+
+      <label>العنوان :</label>
+      <textarea name="customer_address" rows="2" required placeholder="العنوان بالتفصيل لتوصيل الطلب"></textarea>
+
+      <label style="margin-top: 10px; display:block;">ملاحظات إضافية (اختياري):</label>
+      <textarea name="customer_notes" rows="2" placeholder=" يمكنك ترك هذا الحقل فارغا "></textarea>
+    </fieldset>
+
+    <fieldset>
+      <legend>تفاصيل الطلب</legend>
+      <label>الكمية:</label>
+      <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+    </fieldset>
+
+    <p id="totalPrice" style="font-weight:bold; font-size:1.2em; margin:15px 0;">السعر الإجمالي: 0 دج</p>
+
+    <button type="submit" style="width:100%; padding:12px; font-weight:bold;">تأكيد الطلب</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    const productInfo = document.getElementById('productInfo');
+    const form = document.getElementById('orderForm');
+    const message = document.getElementById('message');
+    const totalPriceEl = document.getElementById('totalPrice');
+    const quantityInput = document.getElementById('quantity');
+    const pageTitle = document.getElementById('pageTitle');
+    
+    // عناصر الخيارات الجديدة
+    const productOptionsSet = document.getElementById('productOptionsSet');
+    const colorsSection = document.getElementById('colorsSection');
+    const colorsContainer = document.getElementById('colorsContainer');
+    const selectedColorInput = document.getElementById('selectedColorInput');
+    const sizesSection = document.getElementById('sizesSection');
+    const sizesContainer = document.getElementById('sizesContainer');
+
+    let currentProduct = null;
+
+    // جلب بيانات المنتج
+    async function loadProduct() {
+      try {
+        if (!productId) throw new Error("رقم المنتج غير موجود");
+        const res = await fetch(`/products/${productId}`);
+        if (!res.ok) throw new Error("فشل جلب المنتج");
+        const product = await res.json();
+        currentProduct = product;
+
+         // 1. عرض المعلومات الأساسية
+        // استخدمنا الصورة الأولى إذا كانت مصفوفة
+        const imgUrl = (product.images && product.images.length) ? product.images[0] : (product.image || '');
+        
+        productInfo.innerHTML = `
+ 
+            <div>
+              <h2 style="margin:0 0 5px 0;">${product.name}</h2>
+              <div style="color:#666; font-size:0.9em;">${product.description || ''}</div>
+              <div style="font-weight:bold; color:#333; margin-top:5px;">${product.price}  DA</div>
+            </div>
+          </div>
+        `;
+
+        // 2. معالجة الألوان (Colors)
+        if (product.colors) {
+          // تحويل النص إلى مصفوفة (سواء كان مخزناً كنص مفصول بفاصلة أو مصفوفة)
+          let colorsArr = Array.isArray(product.colors) ? product.colors : product.colors.split(',');
+          // تنظيف المصفوفة من القيم الفارغة
+          colorsArr = colorsArr.filter(c => c && c.trim() !== '');
+
+          if (colorsArr.length > 0) {
+            productOptionsSet.style.display = 'block';
+            colorsSection.style.display = 'block';
+            
+            colorsArr.forEach(color => {
+              const c = color.trim();
+              const div = document.createElement('div');
+              div.className = 'color-option';
+              div.style.backgroundColor = c;
+              div.title = c;
+              div.onclick = () => selectColor(div, c);
+              colorsContainer.appendChild(div);
+            });
+            // إذا كان هناك لون واحد فقط، قم باختياره تلقائياً
+            if (colorsArr.length === 1) {
+              selectColor(colorsContainer.children[0], colorsArr[0].trim());
+            }
+          }
+        }
+
+        // 3. معالجة المقاسات (Sizes)
+        if (product.sizes && product.sizes.trim() !== '') {
+          productOptionsSet.style.display = 'block';
+          sizesSection.style.display = 'block';
+
+          // التحقق هل المقاسات مفصولة بفاصلة (قائمة) أم نص عادي
+          if (product.sizes.includes(',')) {
+            // إنشاء قائمة منسدلة (Select)
+            let sizesArr = product.sizes.split(',');
+            let selectHTML = `<select name="size" class="size-select" required><option value="">اختر المقاس...</option>`;
+            sizesArr.forEach(s => {
+              const sizeVal = s.trim();
+              if(sizeVal) selectHTML += `<option value="${sizeVal}">${sizeVal}</option>`;
+            });
+            selectHTML += `</select>`;
+            sizesContainer.innerHTML = selectHTML;
+          } else {
+            // إنشاء حقل نصي عادي (لأن الأدمن كتب نصاً حراً)
+            sizesContainer.innerHTML = `
+              <p style="font-size:12px; color:#666; margin-bottom:5px;">المقاسات المتاحة: ${product.sizes}</p>
+              <input type="text" name="size" placeholder="اكتب مقاسك هنا..." required>
+            `;
+          }
+        }
+
+        updateTotal(); 
+      } catch (err) {
+        console.error(err);
+        productInfo.innerHTML = "<p style='color:red; text-align:center;'>❌ خطأ: المنتج غير موجود أو حدثت مشكلة.</p>";
+        form.style.display = 'none';
+      }
+    }
+
+    function selectColor(element, colorValue) {
+      // إزالة التحديد السابق
+      document.querySelectorAll('.color-option').forEach(el => el.classList.remove('selected'));
+      // إضافة التحديد الجديد
+      element.classList.add('selected');
+      selectedColorInput.value = colorValue;
+      document.getElementById('colorError').style.display = 'none';
+    }
+
+    loadProduct();
+
+    function updateTotal() {
+      if (!currentProduct) return;
+      const qty = parseInt(quantityInput.value) || 1;
+      const total = qty * currentProduct.price;
+      totalPriceEl.textContent = `السعر الإجمالي: ${total.toLocaleString()}  DA`;
+    }
+    quantityInput.addEventListener("input", updateTotal);
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!currentProduct) {
+        alert("المنتج غير محمل بشكل صحيح");
+        return;
+      }
+
+      // التحقق من اختيار اللون (إذا كانت الألوان معروضة)
+      if (colorsSection.style.display !== 'none' && !selectedColorInput.value) {
+        document.getElementById('colorError').style.display = 'block';
+        // تمرير الشاشة للأعلى قليلاً لرؤية الخطأ
+        colorsSection.scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+      
+      // إضافة بيانات السعر والمنتج
+      data.product_id = productId;
+      data.product_price = currentProduct.price;
+      data.total_price = parseInt(quantityInput.value) * currentProduct.price;
+      
+      // ملاحظة: الحقول color و size يتم جمعها تلقائياً عبر FormData
+      // color يأتي من selectedColorInput (name="color")
+      // size يأتي من الـ Select أو Input (name="size")
+
+      try {
+        const res = await fetch('/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        
+        if (res.ok) {
+          // إخفاء الواجهة القديمة
+          form.style.display = 'none';
+          productInfo.style.display = 'none';
+          pageTitle.style.display = 'none';
+          
+          // عرض رسالة النجاح
+          message.innerHTML = `
+            <div class="success-wrapper">
+              <div class="success-card">
+                <svg class="checkmark-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                  <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                  <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+                <h2 class="success-title">تم تسجيل طلبك!</h2>
+                <p class="success-text">شكراً لثقتك بنا. سيقوم فريق العمل بالتواصل معك لتأكيد التفاصيل.</p>
+                <a href="/" class="home-btn">العودة للرئيسية</a>
+              </div>
+            </div>
+          `;
+        } else {
+          message.innerHTML = `<p style="color:red; text-align:center; margin-top:20px;">❌ ${result.error || 'حدث خطأ ما'}</p>`;
+        }
+      } catch (err) {
+        message.innerHTML = `<p style="color:red; text-align:center; margin-top:20px;">❌ تعذر الاتصال بالسيرفر</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

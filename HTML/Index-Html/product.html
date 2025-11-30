@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>تفاصيل المنتج</title>
+  <link rel="stylesheet" href="../../CSS/product.css">
+ 
+</head>
+<body>
+  <header>
+    <a href="index.html">⬅ رجوع للمنتجات</a>
+  </header>
+
+  <main id="productDetails">
+    <p>جارٍ تحميل المنتج...</p>
+  </main>
+
+  <script>
+    // جلب ID من الرابط
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+    const details = document.getElementById("productDetails");
+
+    async function fetchProduct() {
+      try {
+        // نطلب المنتج المحدد مباشرة من السيرفر (أفضل للأداء)
+        // إذا كنت تستخدم endpoint '/products' العام، يمكنك تركه كما كان
+        const res = await fetch(`/products/${id}`); 
+        
+        if (!res.ok) throw new Error("فشل الاتصال");
+        const product = await res.json();
+
+        if (!product || product.error) {
+          details.innerHTML = "<p>❌ المنتج غير موجود</p>";
+          return;
+        }
+
+        // --- معالجة الصور ---
+        let imagesList = [];
+        
+        // 1. إذا كان السيرفر يرسل مصفوفة صور
+        if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+          imagesList = product.images;
+        } 
+        // 2. إذا لم توجد مصفوفة، نستخدم الصورة الوحيدة القديمة
+        else if (product.image) {
+          imagesList = [product.image];
+        } 
+        // 3. صورة افتراضية
+        else {
+          imagesList = ['https://via.placeholder.com/400x300?text=No+Image'];
+        }
+
+        // إنشاء كود HTML للصور المصغرة (Thumbnails)
+        let thumbnailsHTML = '';
+        if (imagesList.length > 1) {
+          thumbnailsHTML = `<div class="thumbnails">
+            ${imagesList.map((img, index) => 
+              `<img src="${img}" class="thumb ${index === 0 ? 'active' : ''}" onclick="changeImage(this, '${img}')">`
+            ).join('')}
+          </div>`;
+        }
+
+        // رسم الصفحة
+        details.innerHTML = `
+          <h1>${product.name}</h1>
+          
+          <div class="gallery-container">
+            <img id="mainImg" src="${imagesList[0]}" class="main-image" alt="${product.name}">
+            ${thumbnailsHTML}
+          </div>
+
+          <p class="description" id="desc">${product.description || 'لا يوجد وصف'}</p>
+          <span class="read-more" id="toggleDesc">عرض المزيد</span>
+          
+          <p class="price">${Number(product.price).toLocaleString()}  DA</p>
+          <button onclick="goCheckout(${product.id})">اشتري الآن</button>
+        `;
+
+        // منطق "عرض المزيد"
+        const desc = document.getElementById("desc");
+        const toggle = document.getElementById("toggleDesc");
+        
+        // إخفاء زر "عرض المزيد" إذا النص قصير
+        if (desc.scrollHeight <= desc.clientHeight) {
+            toggle.style.display = 'none';
+        }
+
+        toggle.addEventListener("click", () => {
+          desc.classList.toggle("expanded");
+          toggle.textContent = desc.classList.contains("expanded") ? "عرض أقل" : "عرض المزيد";
+        });
+
+      } catch (err) {
+        console.error(err);
+        details.innerHTML = "<p>⚠ خطأ في تحميل المنتج</p>";
+      }
+    }
+
+    // دالة تغيير الصورة الرئيسية عند الضغط على المصغرة
+    function changeImage(thumbElement, src) {
+      // تغيير الصورة الكبيرة
+      const mainImg = document.getElementById('mainImg');
+      mainImg.style.opacity = 0; // تأثير انتقال بسيط
+      setTimeout(() => {
+        mainImg.src = src;
+        mainImg.style.opacity = 1;
+      }, 150);
+
+      // تحديث ستايل المصغرات (active class)
+      document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+      thumbElement.classList.add('active');
+    }
+
+    function goCheckout(pid) {
+      window.location.href = `checkout.html?id=${pid}`;
+    }
+
+    fetchProduct();
+  </script>
+</body>
+</html>

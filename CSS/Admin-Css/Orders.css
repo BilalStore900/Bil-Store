@@ -1,0 +1,288 @@
+ /* =========================================
+   1. المتغيرات والأساسيات
+   ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+
+:root {
+    --color-bg-dark: #000000;
+    --color-panel: #121212;
+    --color-turqoise: #00f2ff;
+    --color-turqoise-dim: rgba(0, 242, 255, 0.1);
+    
+    /* متغيرات الورقة الرسمية */
+    --paper-white: #ffffff;
+    --paper-border: #bbbbbb;
+    --paper-line: #e0e0e0;
+    --paper-label-bg: #f9f9f9;
+    --paper-text: #222222;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    font-family: 'Tajawal', sans-serif;
+    background-color: var(--color-bg-dark);
+    background-image: radial-gradient(circle at top left, #0d1b1e, #000000 60%);
+    background-attachment: fixed;
+    background-size: cover;
+    background-repeat: no-repeat;
+    
+    color: #ffffff;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    width: 100%;
+    direction: rtl;
+    text-align: right;
+}
+
+h1 {
+    text-align: center;
+    color: var(--color-turqoise);
+    font-weight: 700;
+    margin-bottom: 40px;
+    text-shadow: 0 0 15px var(--color-turqoise-dim);
+}
+
+#searchInput {
+    display: block;
+    width: 90%;
+    max-width: 600px;
+    margin: 0 auto 40px auto;
+    padding: 12px 20px;
+    border: 0.5px solid #00d9ff;
+    border-radius: 50px;
+    background-color: var(--color-panel);
+    color: var(--color-turqoise);
+    font-family: 'Tajawal', sans-serif;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: var(--color-turqoise);
+    box-shadow: 0 0 15px var(--color-turqoise-dim);
+}
+
+/* =========================================
+   2. الجدول الرئيسي
+   ========================================= */
+table {
+    width: 95%;
+    margin: 0 auto;
+    border-collapse: separate; 
+    border-spacing: 0; 
+    border-radius: 20px;
+    overflow: hidden;
+    background-color: var(--color-panel);
+    border: 1px solid #333;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+table thead tr {
+    background-color: #0f0f0f;
+}
+
+table th {
+    color: var(--color-turqoise);
+    padding: 18px;
+    font-weight: bold;
+    text-align: right;
+    border-bottom: 1px solid #333;
+}
+
+table tbody tr {
+    transition: background-color 0.2s;
+}
+
+table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+table tbody tr:hover {
+    background-color: #1a1a1a;
+}
+
+table td {
+    padding: 16px;
+    color: #ddd;
+    border-bottom: 1px solid #222;
+}
+
+.clickable {
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.clickable:hover {
+    color: var(--color-turqoise);
+    text-decoration: underline;
+}
+
+button.confirm, button.delete {
+    padding: 6px 15px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-family: 'Tajawal', sans-serif;
+    transition: 0.3s;
+}
+
+button.confirm { background: rgba(0, 230, 118, 0.1); color: #00e676; }
+button.confirm:hover { background: #00e676; color: #000; }
+
+button.delete { background: rgba(255, 23, 68, 0.1); color: #ff1744; }
+button.delete:hover { background: #ff1744; color: #fff; }
+
+/* =========================================
+   3. الورقة الرسمية (Modal) - تعديلات التمركز
+   ========================================= */
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 2000; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.85); 
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s;
+    /* منع التمرير للخلفية */
+    overflow: hidden; 
+}
+
+.modal-content {
+    background-color: var(--paper-white);
+    color: var(--paper-text);
+    
+    /* التمركز المطلق في وسط الشاشة */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    
+    /* أبعاد مضغوطة لتناسب الشاشة */
+    width: 90%; /* عرض أكبر قليلاً للموبايل */
+    max-width: 600px;
+    max-height: 95vh; /* أقصى ارتفاع 95% من الشاشة */
+    overflow-y: auto; /* التمرير الداخلي فقط عند الضرورة القصوى */
+    
+    padding: 25px; /* تقليل الحواشي لتوفير مساحة */
+    border-radius: 6px; 
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
+    border-top: 4px solid var(--color-turqoise); 
+    animation: slideUp 0.4s ease-out;
+}
+
+.close {
+    color: #999;
+    position: absolute;
+    left: 15px;
+    top: 10px;
+    font-size: 28px;
+    transition: 0.2s;
+    z-index: 10; /* لضمان ظهوره فوق العناصر */
+}
+.close:hover { color: #ff1744; cursor: pointer; }
+
+/* رأس الفاتورة - مضغوط */
+.paper-header {
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px; /* تقليل المسافة */
+    margin-bottom: 15px; /* تقليل المسافة */
+}
+
+.paper-header h2 {
+    color: #333;
+    font-size: 20px; /* تصغير الخط قليلاً */
+    margin: 0 0 5px 0;
+}
+
+.paper-header small {
+    color: #777;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+/* =========================================
+   4. جدول المعلومات - مضغوط
+   ========================================= */
+.info-grid {
+    border: 1px solid #ccc; 
+    background-color: #fff;
+    border-radius: 3px;
+}
+
+.info-row {
+    display: flex;
+    border-bottom: 1px solid #eee; 
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-row .label {
+    width: 30%; /* تقليل عرض التسمية قليلاً */
+    background-color: #fcfcfc;
+    border-left: 1px solid #eee; 
+    padding: 8px 10px; /* تقليل الحشوة الداخلية */
+    font-weight: 600;
+    color: #555;
+    font-size: 13px; /* خط أصغر لتناسب الشاشة */
+    display: flex;
+    align-items: center;
+}
+
+.info-row .value {
+    width: 70%;
+    padding: 8px 10px; /* تقليل الحشوة الداخلية */
+    color: #222;
+    font-size: 13px; /* خط أصغر */
+    line-height: 1.5;
+}
+
+/* الملاحظات */
+.info-row .value[style*="color: #d9534f"] {
+    background-color: #fffafa;
+    color: #d32f2f !important;
+}
+
+/* التذييل - مضغوط */
+.modal-footer {
+    margin-top: 15px; /* تقليل المسافة */
+    padding-top: 10px;
+    border-top: 1px dashed #ccc; 
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+}
+
+/* الحركات */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { 
+    from { transform: translate(-50%, -40%); opacity: 0; } /* تعديل الحركة لتتوافق مع التمركز */
+    to { transform: translate(-50%, -50%); opacity: 1; } 
+}
+
+
+ /* تنسيق إضافي لدائرة اللون في المودال */
+  .color-preview {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1px solid #999;
+      vertical-align: middle;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}

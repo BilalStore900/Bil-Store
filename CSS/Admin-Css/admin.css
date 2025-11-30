@@ -1,0 +1,70 @@
+/* خلفية داكنة فخمة */
+body {
+  margin: 0;
+  font-family: "Tajawal", sans-serif;
+  background: #050505;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+/* البطاقة الأساسية */
+.container {
+  width: 90%;
+  max-width: 430px;
+  padding: 50px 30px;
+  background: #0b0f12;
+  border-radius: 20px;
+  border: 1px solid rgba(0,255,255,0.08);
+
+  /* توهج ناعم جدا */
+  box-shadow:
+      0 0 35px rgba(0, 180, 255, 0.06),
+      0 0 8px rgba(0, 255, 255, 0.02);
+  text-align: center;
+}
+
+/* العنوان */
+h1 {
+  margin-bottom: 35px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #cfffff;
+}
+
+/* تجميع الأزرار */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* الزرّ الحديث */
+.dashboard button {
+  width: 100%;
+  padding: 15px 0;
+  font-size: 17px;
+  font-weight: 500;
+  border: none;
+  border-radius: 14px;
+  color: #e7feff;
+
+  /* خلفية بسيطة وراقية */
+  background: linear-gradient(145deg, #062027, #09313c);
+
+  transition: 0.25s ease;
+}
+
+/* تأثير تمرير ناعم راقي */
+.dashboard button:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(145deg, #09313c, #0b4a57);
+  box-shadow: 0 0 12px rgba(0,255,255,0.18);
+}
+
+/* إزالة خط تحت الرابط */
+.dashboard a {
+  text-decoration: none;
+}
